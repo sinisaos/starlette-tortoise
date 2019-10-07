@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main role="main">
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-3">Admin Dashboard page</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card-body">
+                    <h3>Users</h3><br>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Joined</th>
+                                    <th>Last login</th>
+                                    <th>Login count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in results %}
+                                <tr>
+                                    <td>{{ item.username }}</td>
+                                    <td>{{ item.email }}</td>
+                                    <td>{{ item.joined }}</td>
+                                    <td>{{ item.last_login }}</td>
+                                    <td>{{ item.login_count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <h3>Questions</h3><br>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Content</th>
+                                    <th>Created</th>
+                                    <th>Views</th>
+                                    <th>Author</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in questions %}
+                                <tr>
+                                    <td>{{ item.title }}</td>
+                                    <td>{{ item.content }}</td>
+                                    <td>{{ item.created }}</td>
+                                    <td>{{ item.views }}</td>
+                                    <td>{{ item.user.username }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    </div> <!-- /container -->
+</main>
+{% endblock %}

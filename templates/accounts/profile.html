@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main role="main">
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <ul class="list-group">
+
+                    <li class="list-group-item text-muted">Profile <i class="fas fa-user"></i></li>
+                    <li class="list-group-item text-right"><span
+                            class="float-left"><strong>Username</strong></span><span
+                            class="float-right">{{ results.username.capitalize() }}</span>
+                    </li>
+                    <li class="list-group-item text-right"><span class="float-left"><strong>Email</strong></span><span
+                            class="float-right">{{ results.email }}</span>
+                    </li>
+                    <li class="list-group-item text-right"><span class="float-left"><strong>Joined</strong></span><span
+                            class="float-right">{{ results.joined.strftime('%d/%m/%Y') }}</span>
+                    </li>
+                    <li class="list-group-item text-right"><span class="float-left"><strong>Last
+                                login</strong></span><span
+                            class="float-right">{{ results.last_login.strftime('%d/%m/%Y %H:%M:%S')}}</span>
+                    </li>
+                    <li class="list-group-item text-right"><span class="float-left"><strong>Login
+                                count</strong></span><span class="float-right">{{ results.login_count }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div> <!-- /container -->
+    <hr>
+</main>
+{% endblock %}

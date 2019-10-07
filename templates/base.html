@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Q&A</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{{ url_for('static', path='/css/bootstrap.min.css') }}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{{ url_for('static', path='/css/jumbotron.css') }}" rel="stylesheet">
+
+  <!-- Font-awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark ">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Q&A</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+      aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav mr-auto">
+        <a class="nav-link" href="{{ url_for('questions_all') }}">Questions</a>
+      </ul>
+      <ul class="navbar-nav">
+        {% if not request.user.username %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('login') }}?next=/">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+        </li>
+        {% else %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">Hello {{ request.user.username }}</a>
+          <div class="dropdown-menu" aria-labelledby="dropdown01">
+            {% if request.user.is_authenticated and request.user.username == request.cookies["admin"] %}
+            <a class="dropdown-item" href="{{ url_for('dashboard') }}">Dashboard</a>
+            {% else %}
+            <a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </li>
+        {% endif %}
+      </ul>
+
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <footer class="container">
+    <p>&copy; Starter 2019</p>
+  </footer>
+
+  <!-- Bootstrap core JavaScript
+    ================================================== -->
+  <!-- Placed at the end of the document so the pages load faster -->
+  <script src="{{ url_for('static', path='/js/jquery-3.3.1.slim.min.js') }}"></script>
+  <script src="{{ url_for('static', path='/js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', path='/js/bootstrap.min.js') }}"></script>
+</body>
+
+</html>
