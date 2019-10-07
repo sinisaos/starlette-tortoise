@@ -1,8 +1,8 @@
 import datetime
+import math
 from settings import templates, BASE_HOST
 from starlette.responses import RedirectResponse
 from starlette.authentication import requires
-from tortoise.aggregation import Count
 from questions.forms import QuestionForm, AnswerForm
 from models import Question, User, Answer, Tag
 
@@ -12,17 +12,23 @@ async def questions_all(request):
     All questions
     """
     path = request.url.path
+    page_query = request.query_params['page']
+    result = await Question.all()
+    count = len(result)
+    page = int(page_query)
+    per = 2
+    totalPages = int(math.ceil(count / per))
+    offset = per * (page - 1)
     results = await Question.all().prefetch_related(
-        "user", "tags").order_by("-id")
-    answer_count = await Answer.annotate(
-        answer_count=Count("question")).count()
+        "user", "tags").limit(per).offset(offset).order_by('-id')
     return templates.TemplateResponse(
         "questions/questions.html",
         {
             "request": request,
             "results": results,
             "path": path,
-            "answer_count": answer_count,
+            "totalPages": totalPages,
+            "page_query": page_query
         },
     )
 
@@ -99,7 +105,7 @@ async def question_create(request):
                 await tag.save()
                 tags.append(tag)
                 await query.tags.add(tags[idx])
-            return RedirectResponse(url="/questions", status_code=302)
+            return RedirectResponse(url="/questions/?page=1", status_code=302)
         tag_error = "Tags must be comma-separated"
         return templates.TemplateResponse(
             "questions/question_create.html",
