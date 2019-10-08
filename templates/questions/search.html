@@ -5,8 +5,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                <h3>Tags: "{{ tag }}"</h3>
+                <h3>Results for term: <b>"{{ q }}"</b></h3>
                 <br>
+                {% if results %}
                 {% for item in results %}
                 <h4><b><a href="{{ url_for('question', id=item.id, slug=item.slug) }}">{{ item.title }}</a></b>
                     <small class="float-right">Asked on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
@@ -22,7 +23,9 @@
                 {% endfor %}
                 <hr>
                 {% endfor %}
-
+                {% else %}
+                <h4>No results</h4>
+                {% endif %}
             </div>
         </div>
     </div>

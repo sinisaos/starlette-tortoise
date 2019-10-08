@@ -3,6 +3,7 @@ import math
 from settings import templates, BASE_HOST
 from starlette.responses import RedirectResponse
 from starlette.authentication import requires
+from tortoise.query_utils import Q
 from questions.forms import QuestionForm, AnswerForm
 from models import Question, User, Answer, Tag
 
@@ -130,4 +131,25 @@ async def tags(request):
     return templates.TemplateResponse(
         "questions/tags.html", {"request": request,
                                 "results": results, "tag": tag}
+    )
+
+
+async def search(request):
+    """
+    Search questions
+    """
+    q = request.query_params['q']
+    results = (
+        await Question.all()
+        .prefetch_related("user", "tags")
+        .filter(Q(title__icontains=q) |
+                Q(content__icontains=q) |
+                Q(user__username__icontains=q) |
+                Q(tags__name__icontains=q)).distinct()
+        .order_by("-id")
+    )
+    return templates.TemplateResponse(
+        "questions/search.html", {"request": request,
+                                  "results": results,
+                                  "q": q}
     )

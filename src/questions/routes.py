@@ -1,6 +1,7 @@
 from starlette.routing import Route, Router
-from questions.views import questions_all, question, question_create, tags
-
+from questions.views import (
+    questions_all, question, question_create, tags, search
+)
 
 questions_routes = Router([
     Route("/", endpoint=questions_all,
@@ -10,4 +11,5 @@ questions_routes = Router([
     Route("/create", endpoint=question_create,
           methods=["GET", "POST"], name="question_create"),
     Route("/tags/{tag:str}", endpoint=tags, methods=["GET"], name="tags"),
+    Route("/search", endpoint=search, methods=["GET"], name="search"),
 ])
