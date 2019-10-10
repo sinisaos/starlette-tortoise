@@ -15,36 +15,51 @@
                 {% for tag in item.tags %}
                 <a href="{{ url_for('tags', tag=tag.name) }}" class="btn btn-xs btn-primary">{{ tag.name }}</a>
                 {% endfor %}
+                {% if request.user.is_authenticated %}
+                <form id="questionlikesForm" class="form form-questionlikes" method="POST" action="" role="form">
+                    {{ question_likes_form.question_id(value=item.id) }}
+                    <p class="float-right"><input class="btn btn-link fa" style="color:#33cc33;" type="submit"
+                            value="&#xf164; {{ item.question_like }}">
+                    </p>
+                </form>
+                <br>
+                {% else %}
+                <a href="{{ url_for('login') }}?next={{ path }}" class="float-right" style="color:#33cc33;"><i
+                        class="fa fa-thumbs-up" aria-hidden="true" title="Disike">
+                        {{ item.question_like }}&ensp;</i></a>
+                {% endif %}
                 <hr>
                 {% if request.user.is_authenticated %}
-                <form id="answerForm" class="form form-answer" method="POST" action="" role="form">
-                    {{ form.csrf_token }}
-                    <div class="form-group">
-                        {{form.content(placeholder="Content", cols="35", rows="10",class_="form-control") |safe}}
-                        {% for error in form.content.errors %}
-                        <span style="color: red;">*{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <p><input class="btn btn-primary" type="submit" value="Submit"></p>
-                </form>
+                <h3 class="float-left">{{ answer_count }} answers</h3>
+                <a href="{{ url_for('answer_create') }}?next={{ path }}" class="btn btn-primary float-right">Post
+                    answer</a>
+                <br><br>
                 {% else %}
                 <h3 class="float-left">{{ answer_count }} answers</h3>
                 <a href="{{ url_for('login') }}?next={{ path }}" class="btn btn-primary float-right">Post answer</a>
                 <br><br>
                 {% endif %}
                 <hr>
-                {% for item in answer_results %}
-                <h4><small class="float-left">Answered on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
-                        <b>{{ item.ans_user.username }}</b><b>
+                {% for result in answer_results %}
+                <h4><small class="float-left">Answered on <i>{{ result.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
+                        <b>{{ result.ans_user.username }}</b><b>
                         </b></small></h4>
                 <br><br>
-                <p>{{ item.content }}</p>
+                <p>{{ result.content }}</p>
+                {% if request.user.is_authenticated %}
+                <form id="likesForm" class="form form-likes" method="POST" action="" role="form">
+                    {{ likes_form.answer_id(value=result.id) }}
+                    <p class="float-right"><input class="btn btn-link fa" style="color:#33cc33;" type="submit"
+                            value="&#xf164; {{ result.answer_like }}">&nbsp;
+                    </p>
+                </form>
+                {% else %}
+                <a href="{{ url_for('login') }}?next={{ path }}" class="float-right" style="color:#33cc33;"><i
+                        class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ result.answer_like }}&ensp;</i></a>
+                {% endif %}
+                <br>
                 <hr>
                 {% endfor %}
-
-
-
-
             </div>
         </div>
     </div>

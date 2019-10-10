@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<main role="main">
+    <div class="container">
+        <br>
+        {% if tag_error %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            {{ tag_error }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        <h1 class="mt-5">Create answer</h1>
+        <br />
+        <form id="answerForm" class="form form-answer" method="POST" action="" role="form">
+            {{ form.csrf_token }}
+            <div class="form-group">
+                {{form.content(placeholder="Content", cols="35", rows="10",class_="form-control") |safe}}
+                {% for error in form.content.errors %}
+                <span style="color: red;">*{{ error }}</span>
+                {% endfor %}
+            </div>
+            <p><input class="btn btn-primary float-right" type="submit" value="Submit"></p>
+        </form>
+        <br><br>
+    </div> <!-- /container -->
+    <hr>
+</main>
+{% endblock %}

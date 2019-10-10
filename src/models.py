@@ -33,7 +33,8 @@ class Question(Model):
     slug = fields.CharField(max_length=255)
     content = fields.TextField()
     created = fields.DatetimeField(auto_now_add=True)
-    views = fields.IntField(default=0)
+    view = fields.IntField(default=0)
+    question_like = fields.IntField(default=0)
     answer_count = fields.IntField()
     tags = fields.ManyToManyField(
         'models.Tag', related_name='tags', through='question_tag')
@@ -48,6 +49,7 @@ class Answer(Model):
     id = fields.IntField(pk=True)
     content = fields.TextField()
     created = fields.DatetimeField(auto_now_add=True)
+    answer_like = fields.IntField(default=0)
     ans_user = fields.ForeignKeyField(
         'models.User', related_name='ans_user')
     question = fields.ForeignKeyField(
