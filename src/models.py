@@ -36,6 +36,7 @@ class Question(Model):
     view = fields.IntField(default=0)
     question_like = fields.IntField(default=0)
     answer_count = fields.IntField()
+    accepted_answer = fields.BooleanField(default=False)
     tags = fields.ManyToManyField(
         'models.Tag', related_name='tags', through='question_tag')
     user = fields.ForeignKeyField(
@@ -50,6 +51,7 @@ class Answer(Model):
     content = fields.TextField()
     created = fields.DatetimeField(auto_now_add=True)
     answer_like = fields.IntField(default=0)
+    is_accepted_answer = fields.BooleanField(default=False)
     ans_user = fields.ForeignKeyField(
         'models.User', related_name='ans_user')
     question = fields.ForeignKeyField(

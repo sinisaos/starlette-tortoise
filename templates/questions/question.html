@@ -57,6 +57,16 @@
                 <a href="{{ url_for('login') }}?next={{ path }}" class="float-right" style="color:#33cc33;"><i
                         class="fa fa-thumbs-up" aria-hidden="true" title="Like"> {{ result.answer_like }}&ensp;</i></a>
                 {% endif %}
+                {% if request.user.is_authenticated and item.user.username == request.user.username and result.is_accepted_answer == False and item.accepted_answer == False %}
+                <a href="{{ url_for('accepted_answer') }}?next={{ path }}/{{ result.id }}"
+                    class="btn btn-primary float-left">Accept
+                    Answer</a>
+                {% elif request.user.is_authenticated and item.user.username == request.user.username and result.is_accepted_answer == True %}
+                <span class="badge badge-badge-pill badge-success float-left">Accepted answer</span>
+                {% elif result.is_accepted_answer == True %}
+                <span class="badge badge-badge-pill badge-success float-left">Accepted answer</span>
+                {% else %}
+                {% endif %}
                 <br>
                 <hr>
                 {% endfor %}

@@ -19,3 +19,7 @@ class AnswerLikesForm(Form):
 
 class QuestionLikesForm(Form):
     question_id = HiddenField()
+
+
+class AcceptedAnswerForm(Form):
+    answer_id = HiddenField()

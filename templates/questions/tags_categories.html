@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<main role="main">
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                {% for tag in results %}
+                <a href="{{ url_for('tags', tag=tag.name) }}" class="btn btn-md btn-primary"
+                    style="margin-bottom: 10px;">{{ tag.name }}
+                    ({{ tag.cnt }})</a>&ensp;
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <hr>
+    </div> <!-- /container -->
+</main>
+{% endblock %}

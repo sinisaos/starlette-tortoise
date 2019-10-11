@@ -4,8 +4,13 @@ from settings import templates, BASE_HOST
 from starlette.responses import RedirectResponse
 from starlette.authentication import requires
 from tortoise.query_utils import Q
+from tortoise.transactions import in_transaction
 from questions.forms import (
-    QuestionForm, AnswerForm, AnswerLikesForm, QuestionLikesForm
+    QuestionForm,
+    AnswerForm,
+    AnswerLikesForm,
+    QuestionLikesForm,
+    AcceptedAnswerForm
 )
 from models import Question, User, Answer, Tag
 
@@ -110,6 +115,7 @@ async def answer_create(request):
             content=form.content.data,
             created=datetime.datetime.now(),
             answer_like=0,
+            is_accepted_answer=0,
             question_id=results.id,
             ans_user_id=result.id,
         )
@@ -122,6 +128,36 @@ async def answer_create(request):
             "request": request,
             "form": form,
             "next": next
+        }
+    )
+
+
+@requires("authenticated")
+async def accepted_answer(request):
+    """
+    Accepted answer form
+    """
+    id = int(request.query_params['next'].split('/')[2])
+    answer_id = int(request.query_params['next'].split('/')[-1])
+    path = '/'.join((request.query_params['next']).split('/')[:-1])
+    print(path)
+    res = await Question.get(id=id)
+    data = await request.form()
+    form = AcceptedAnswerForm(data)
+    result = await Answer.get(pk=answer_id)
+    if request.method == "POST":
+        result.is_accepted_answer = True
+        await result.save()
+        res.accepted_answer = True
+        await res.save()
+        return RedirectResponse(BASE_HOST + path, status_code=302)
+    return templates.TemplateResponse(
+        "questions/accepted_answer.html", {
+            "request": request,
+            "form": form,
+            "result": result,
+            "res": res,
+            "path": path
         }
     )
 
@@ -179,8 +215,10 @@ async def tags(request):
         .order_by("-id")
     )
     return templates.TemplateResponse(
-        "questions/tags.html", {"request": request,
-                                "results": results, "tag": tag}
+        "questions/tags.html", {
+            "request": request,
+            "results": results, "tag": tag
+        }
     )
 
 
@@ -199,7 +237,27 @@ async def search(request):
         .order_by("-id")
     )
     return templates.TemplateResponse(
-        "questions/search.html", {"request": request,
-                                  "results": results,
-                                  "q": q}
+        "questions/search.html", {
+            "request": request,
+            "results": results,
+            "q": q
+        }
+    )
+
+
+async def tags_categories(request):
+    """
+    Tags categories
+    """
+    # raw sql to use SQL GROUP BY
+    async with in_transaction() as conn:
+        results = await conn.execute_query(
+            "SELECT DISTINCT name, COUNT(name) as cnt FROM tag \
+                GROUP BY name ORDER BY name"
+        )
+    return templates.TemplateResponse(
+        "questions/tags_categories.html", {
+            "request": request,
+            "results": results
+        }
     )
