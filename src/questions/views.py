@@ -173,7 +173,8 @@ async def question_create(request):
     form = QuestionForm(data)
     title = form.title.data
     if request.method == "POST" and form.validate():
-        if "," in form.tags.data:
+        # possible to insert only one tag without error
+        if "," in form.tags.data or len((form.tags.data).split()) == 1:
             query = Question(
                 title=title,
                 slug="-".join(title.lower().split()),
@@ -186,8 +187,10 @@ async def question_create(request):
             )
             await query.save()
             tags = []
-            # split tags and insert in db
-            for idx, item in enumerate(form.tags.data.split(",")):
+            # split tags and make sure that is valid tags list without empty
+            # space and than insert in db
+            valid_tags_list = [i for i in form.tags.data.split(",") if i != '']
+            for idx, item in enumerate(valid_tags_list):
                 tag = Tag(name=item.lower())
                 await tag.save()
                 tags.append(tag)
