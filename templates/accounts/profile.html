@@ -5,9 +5,8 @@
     <br>
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <ul class="list-group">
-
                     <li class="list-group-item text-muted">Profile <i class="fas fa-user"></i></li>
                     <li class="list-group-item text-right"><span
                             class="float-left"><strong>Username</strong></span><span
@@ -26,7 +25,105 @@
                     <li class="list-group-item text-right"><span class="float-left"><strong>Login
                                 count</strong></span><span class="float-right">{{ results.login_count }}</span>
                     </li>
+                    <li class="list-group-item text-right"><span class="float-right">
+                            <form action="/accounts/user-delete/{{ results.id }}" method="post">
+                                <button class="btn btn-danger float-right"
+                                    onclick="return confirm('Are you sure you want to delete your account? Deleting your account cannot be undone !!!');">
+                                    <i lass="fa fa-trash">
+                                    </i> Delete
+                                    account</button><br>
+                            </form>
+                        </span>
+                    </li>
                 </ul>
+                <br><br>
+
+                <ul class="nav nav-tabs" id="myTab">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#questions" data-toggle="tab">Questions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#answers" data-toggle="tab">Answers</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="questions">
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Content</th>
+                                        <th>Created</th>
+                                        <th>Views</th>
+                                        <th>Likes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in questions %}
+                                    <tr>
+                                        <td>{{ item.title }}</td>
+                                        <td>
+                                            <p>{{ item.content[:50] }}...</p>
+                                        </td>
+                                        <td>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                        <td>{{ item.view }}</td>
+                                        <td>{{ item.question_like }}</td>
+                                        <td>
+                                            <form action="/questions/delete/{{ item.id }}" method="post">
+                                                <a href="/questions/edit/{{ item.id }}" class="btn btn-info"><i
+                                                        class="fa fa-edit"></i></a>
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button><br>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane" id="answers">
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Content</th>
+                                        <th>Created</th>
+                                        <th>Likes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in answers %}
+                                    <tr>
+                                        <td>
+                                            <p>{{ item.content[:50] }}...</p>
+                                        </td>
+                                        <td>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                        <td>{{ item.answer_like }}</td>
+                                        <td>
+                                            <form action="/questions/answer-delete/{{ item.id }}" method="post">
+                                                <a href="/questions/answer-edit/{{ item.id }}" class="btn btn-info"><i
+                                                        class="fa fa-edit"></i></a>
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button><br>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <!--/tab-pane-->
+
+                </div>
+                <!--/tab-content-->
             </div>
         </div>
     </div> <!-- /container -->

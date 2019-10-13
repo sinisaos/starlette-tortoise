@@ -2,10 +2,12 @@ import datetime
 from settings import templates, BASE_HOST
 from starlette.responses import RedirectResponse
 from starlette.authentication import requires
+from tortoise.transactions import in_transaction
 from accounts.forms import RegistrationForm, LoginForm
 from models import (
     User,
     Question,
+    Answer,
     check_password,
     generate_jwt,
     hash_password,
@@ -119,18 +121,43 @@ async def login(request):
     })
 
 
+@requires("authenticated")
+async def user_delete(request):
+    """
+    Delete user
+    """
+    id = request.path_params["id"]
+    if request.method == "POST":
+        async with in_transaction() as conn:
+            await conn.execute_query(
+                f"DELETE FROM tag WHERE tag.id IN \
+                (SELECT question_tag.tag_id FROM question \
+                JOIN question_tag ON question_tag.question_id = question.id \
+                JOIN user ON user.id = question.user_id WHERE user.id = {id})"
+            )
+        await User.get(id=id).delete()
+        if request.user.username == ADMIN:
+            return RedirectResponse(url="/accounts/dashboard", status_code=302)
+        request.session.clear()
+        response = RedirectResponse(url="/", status_code=302)
+        response.delete_cookie("jwt")
+        return response
+
+
 @requires(["authenticated", ADMIN], redirect="index")
 async def dashboard(request):
     if request.user.is_authenticated:
         auth_user = request.user.display_name
         results = await User.all()
         questions = await Question.all().prefetch_related('user')
+        answers = await Answer.all()
         return templates.TemplateResponse(
             "accounts/dashboard.html",
             {
                 "request": request,
                 "results": results,
                 "questions": questions,
+                "answers": answers,
                 "auth_user": auth_user
             },
         )
@@ -141,9 +168,19 @@ async def profile(request):
     if request.user.is_authenticated:
         auth_user = request.user.display_name
         results = await User.get(username=auth_user)
+        questions = await Question.all().filter(user_id=results.id)
+        answers = await Answer.all().filter(ans_user_id=results.id)
+        data = await request.form()
+        print(data)
         return templates.TemplateResponse(
             "accounts/profile.html",
-            {"request": request, "results": results, "auth_user": auth_user},
+            {
+                "request": request,
+                "results": results,
+                "auth_user": auth_user,
+                "questions": questions,
+                "answers": answers
+            }
         )
 
 

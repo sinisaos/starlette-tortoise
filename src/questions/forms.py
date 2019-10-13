@@ -9,8 +9,17 @@ class QuestionForm(Form):
                        validators=[InputRequired()])
 
 
+class QuestionEditForm(Form):
+    title = StringField(validators=[InputRequired()])
+    content = TextAreaField(validators=[InputRequired()])
+
+
 class AnswerForm(Form):
     content = TextAreaField("Content", validators=[InputRequired()])
+
+
+class AnswerEditForm(Form):
+    content = TextAreaField(validators=[InputRequired()])
 
 
 class AnswerLikesForm(Form):

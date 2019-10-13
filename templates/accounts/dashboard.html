@@ -2,73 +2,139 @@
 
 {% block content %}
 <main role="main">
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-        <div class="container">
-            <h1 class="display-3">Admin Dashboard page</h1>
-        </div>
-    </div>
-
     <div class="container">
         <!-- Example row of columns -->
         <div class="row">
             <div class="col-md-12">
-                <div class="card-body">
-                    <h3>Users</h3><br>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Joined</th>
-                                    <th>Last login</th>
-                                    <th>Login count</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in results %}
-                                <tr>
-                                    <td>{{ item.username }}</td>
-                                    <td>{{ item.email }}</td>
-                                    <td>{{ item.joined }}</td>
-                                    <td>{{ item.last_login }}</td>
-                                    <td>{{ item.login_count }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <hr>
-                    <h3>Questions</h3><br>
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Content</th>
-                                    <th>Created</th>
-                                    <th>Views</th>
-                                    <th>Author</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in questions %}
-                                <tr>
-                                    <td>{{ item.title }}</td>
-                                    <td>{{ item.content }}</td>
-                                    <td>{{ item.created }}</td>
-                                    <td>{{ item.views }}</td>
-                                    <td>{{ item.user.username }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <br>
+                <ul class="nav nav-tabs" id="myTab">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#users" data-toggle="tab">Users</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#questions" data-toggle="tab">Questions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#answers" data-toggle="tab">Answers</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="users">
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Joined</th>
+                                        <th>Last login</th>
+                                        <th>Login count</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in results %}
+                                    <tr>
+                                        <td>{{ item.username }}</td>
+                                        <td>
+                                            <p>{{ item.email }}</p>
+                                        </td>
+                                        <td>{{ item.joined.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ item.last_login.strftime('%d/%m/%Y %H:%M:%S')}}</td>
+                                        <td>{{ item.login_count }}</td>
+                                        <td>
+                                            <form action="/accounts/user-delete/{{ item.id }}" method="post">
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button><br>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
+
+                    <div class="tab-pane" id="questions">
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Content</th>
+                                        <th>Created</th>
+                                        <th>Views</th>
+                                        <th>Likes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in questions %}
+                                    <tr>
+                                        <td>{{ item.title }}</td>
+                                        <td>
+                                            <p>{{ item.content[:50] }}...</p>
+                                        </td>
+                                        <td>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                        <td>{{ item.view }}</td>
+                                        <td>{{ item.question_like }}</td>
+                                        <td>
+                                            <form action="/questions/delete/{{ item.id }}" method="post">
+                                                <a href="/questions/edit/{{ item.id }}" class="btn btn-info"><i
+                                                        class="fa fa-edit"></i></a>
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button><br>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane" id="answers">
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Content</th>
+                                        <th>Created</th>
+                                        <th>Likes</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in answers %}
+                                    <tr>
+                                        <td>
+                                            <p>{{ item.content[:50] }}...</p>
+                                        </td>
+                                        <td>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                                        <td>{{ item.answer_like }}</td>
+                                        <td>
+                                            <form action="/questions/answer-delete/{{ item.id }}" method="post">
+                                                <a href="/questions/answer-edit/{{ item.id }}" class="btn btn-info"><i
+                                                        class="fa fa-edit"></i></a>
+                                                <button class="btn btn-danger"><i class="fa fa-trash"></i></button><br>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--/tab-pane-->
+
                 </div>
+                <!--/tab-content-->
             </div>
         </div>
+    </div>
     </div>
     <hr>
     </div> <!-- /container -->

@@ -40,7 +40,7 @@ class Question(Model):
     tags = fields.ManyToManyField(
         'models.Tag', related_name='tags', through='question_tag')
     user = fields.ForeignKeyField(
-        'models.User', related_name='user')
+        'models.User', related_name='user', on_delete=fields.CASCADE)
 
     def __str__(self):
         return self.title
@@ -53,9 +53,9 @@ class Answer(Model):
     answer_like = fields.IntField(default=0)
     is_accepted_answer = fields.BooleanField(default=False)
     ans_user = fields.ForeignKeyField(
-        'models.User', related_name='ans_user')
+        'models.User', related_name='ans_user', on_delete=fields.CASCADE)
     question = fields.ForeignKeyField(
-        'models.Question', related_name='question')
+        'models.Question', related_name='question', on_delete=fields.CASCADE)
 
 
 class Tag(Model):
