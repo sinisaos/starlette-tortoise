@@ -347,21 +347,28 @@ async def search(request):
     """
     Search questions
     """
-    q = request.query_params['q']
-    results = (
-        await Question.all()
-        .prefetch_related("user", "tags")
-        .filter(Q(title__icontains=q) |
-                Q(content__icontains=q) |
-                Q(user__username__icontains=q) |
-                Q(tags__name__icontains=q)).distinct()
-        .order_by("-id")
-    )
+    try:
+        q = request.query_params['q']
+        results = (
+            await Question.all()
+            .prefetch_related("user", "tags")
+            .filter(Q(title__icontains=q) |
+                    Q(content__icontains=q) |
+                    Q(user__username__icontains=q) |
+                    Q(tags__name__icontains=q)).distinct()
+            .order_by("-id")
+        )
+    except KeyError:
+        results = (
+            await Question.all()
+            .prefetch_related("user", "tags")
+            .order_by("-id")
+        )
     return templates.TemplateResponse(
         "questions/search.html", {
             "request": request,
             "results": results,
-            "q": q
+            "count": len(results)
         }
     )
 
