@@ -5,10 +5,10 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                {% for tag in results %}
-                <a href="{{ url_for('tags', tag=tag.name) }}" class="btn btn-md btn-primary"
-                    style="margin-bottom: 10px;">{{ tag.name }}
-                    ({{ tag.cnt }})</a>&ensp;
+                {% for tag in categories_tags %}
+                <a href="{{ url_for('tags', tag=tag[0].name) }}" class="btn btn-md btn-primary"
+                    style="margin-bottom: 10px;">{{ tag[0].name }}
+                    ({{ tag[1] }})</a>&ensp;
                 {% endfor %}
             </div>
         </div>

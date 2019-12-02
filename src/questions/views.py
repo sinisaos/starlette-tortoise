@@ -1,5 +1,6 @@
 import datetime
 import math
+import itertools as it
 from settings import templates, BASE_HOST
 from starlette.responses import RedirectResponse
 from starlette.authentication import requires
@@ -377,15 +378,14 @@ async def tags_categories(request):
     """
     Tags categories
     """
-    # raw sql to use SQL GROUP BY
-    async with in_transaction() as conn:
-        results = await conn.execute_query(
-            "SELECT DISTINCT name, COUNT(name) as cnt FROM tag \
-                GROUP BY name ORDER BY name"
-        )
+    # use itertools.groupby to simulate SQL GROUP BY
+    results = await Tag.all().order_by("name").values("name")
+    categories_tags = [
+        (k, sum(1 for i in g)) for k, g in it.groupby(results)
+    ]
     return templates.TemplateResponse(
         "questions/tags_categories.html", {
             "request": request,
-            "results": results
+            "categories_tags": categories_tags
         }
     )
