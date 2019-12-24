@@ -1,45 +1,22 @@
-# Python: Getting Started
+Example of [Starlette](https://www.starlette.io/) Q&A application made with [Tortoise ORM](https://tortoise-orm.readthedocs.io/en/latest/) and PostgreSQL.
 
-A barebones Django app, which can easily be deployed to Heroku.
+Open terminal and run:
 
-This application supports the [Getting Started with Python on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) article - check it out.
-
-## Running Locally
-
-Make sure you have Python 3.7 [installed locally](http://install.python-guide.org). To push to Heroku, you'll need to install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli), as well as [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup).
-
-```sh
-$ git clone https://github.com/heroku/python-getting-started.git
-$ cd python-getting-started
-
-$ python3 -m venv getting-started
-$ pip install -r requirements.txt
-
-$ createdb python_getting_started
-
-$ python manage.py migrate
-$ python manage.py collectstatic
-
-$ heroku local
+```shell
+virtualenv -p python3 envname
+cd envname
+source bin/activate
+git clone https://github.com/sinisaos/starlette-tortoise.git
+cd starlette-tortoise
+pip install -r requirements.txt
+sudo -i -u yourpostgresusername psql
+CREATE DATABASE questions;
+\q
+touch .env
+## put this two line in .env file
+## DB_URI="postgres://username:password@localhost:5432/questions"
+## SECRET_KEY="your secret key"
+uvicorn app:app --port 8000 --host 0.0.0.0 
 ```
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
-
-## Deploying to Heroku
-
-```sh
-$ heroku create
-$ git push heroku master
-
-$ heroku run python manage.py migrate
-$ heroku open
-```
-or
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-## Documentation
-
-For more information about using Python on Heroku, see these Dev Center articles:
-
-- [Python on Heroku](https://devcenter.heroku.com/categories/python)
+For Heroku deployment change DB_URI in .env file and BASE_HOST in settings.py and everything shoud be fine.
