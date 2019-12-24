@@ -1,6 +1,10 @@
 from starlette.routing import Route, Router
 from questions.views import (
     questions_all,
+    questions_solved,
+    questions_open,
+    questions_viewed,
+    questions_oldest,
     question,
     question_create,
     question_edit,
@@ -17,6 +21,14 @@ from questions.views import (
 questions_routes = Router([
     Route("/", endpoint=questions_all,
           methods=["GET", "POST"], name="questions_all"),
+    Route("/solved", endpoint=questions_solved,
+          methods=["GET", "POST"], name="questions_solved"),
+    Route("/open", endpoint=questions_open,
+          methods=["GET", "POST"], name="questions_open"),
+    Route("/viewed", endpoint=questions_viewed,
+          methods=["GET", "POST"], name="questions_viewed"),
+    Route("/oldest", endpoint=questions_oldest,
+          methods=["GET", "POST"], name="questions_oldest"),
     Route("/{id:int}/{slug:str}", endpoint=question,
           methods=["GET", "POST"], name="question"),
     Route("/create", endpoint=question_create,

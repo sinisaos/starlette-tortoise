@@ -50,6 +50,110 @@ async def questions_all(request):
     )
 
 
+async def questions_solved(request):
+    """
+    Solved questions
+    """
+    path = request.url.path
+    page_query = request.query_params['page']
+    result = await Question.filter(accepted_answer=True)
+    count = len(result)
+    page = int(page_query)
+    per = 2
+    totalPages = int(math.ceil(count / per))
+    offset = per * (page - 1)
+    results = await Question.filter(accepted_answer=True).prefetch_related(
+        "user", "tags").limit(per).offset(offset).order_by('-id')
+    return templates.TemplateResponse(
+        "questions/questions_solved.html",
+        {
+            "request": request,
+            "results": results,
+            "path": path,
+            "totalPages": totalPages,
+            "page_query": page_query
+        },
+    )
+
+
+async def questions_open(request):
+    """
+    Unsolved questions
+    """
+    path = request.url.path
+    page_query = request.query_params['page']
+    result = await Question.filter(accepted_answer=False)
+    count = len(result)
+    page = int(page_query)
+    per = 2
+    totalPages = int(math.ceil(count / per))
+    offset = per * (page - 1)
+    results = await Question.filter(accepted_answer=False).prefetch_related(
+        "user", "tags").limit(per).offset(offset).order_by('-id')
+    return templates.TemplateResponse(
+        "questions/questions_open.html",
+        {
+            "request": request,
+            "results": results,
+            "path": path,
+            "totalPages": totalPages,
+            "page_query": page_query
+        },
+    )
+
+
+async def questions_viewed(request):
+    """
+    Most viewed questions
+    """
+    path = request.url.path
+    page_query = request.query_params['page']
+    result = await Question.all()
+    count = len(result)
+    page = int(page_query)
+    per = 2
+    totalPages = int(math.ceil(count / per))
+    offset = per * (page - 1)
+    results = await Question.all().prefetch_related(
+        "user", "tags").limit(per).offset(offset).order_by('-view')
+    return templates.TemplateResponse(
+        "questions/questions_viewed.html",
+        {
+            "request": request,
+            "results": results,
+            "path": path,
+            "totalPages": totalPages,
+            "page_query": page_query
+        },
+    )
+
+
+async def questions_oldest(request):
+    """
+    Oldest questions
+    """
+    path = request.url.path
+    page_query = request.query_params['page']
+    result = await Question.all()
+    count = len(result)
+    page = int(page_query)
+    per = 2
+    totalPages = int(math.ceil(count / per))
+    offset = per * (page - 1)
+    results = await Question.all().prefetch_related(
+        "user", "tags").limit(per).offset(offset).order_by('id')
+    return templates.TemplateResponse(
+        "questions/questions_oldest.html",
+        {
+            "request": request,
+            "results": results,
+            "path": path,
+            "totalPages": totalPages,
+            "page_query": page_query
+        },
+    )
+
+
 async def question(request):
     """
     Single question
