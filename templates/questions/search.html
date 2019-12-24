@@ -9,10 +9,10 @@
                 <h3>{{ count }} result(s)</h3>
                 <br>
                 {% for item in results %}
-                <h4><b><a href="{{ url_for('question', id=item.id, slug=item.slug) }}">{{ item.title }}</a></b>
-                    <small class="float-right">Asked on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
-                        <b>{{ item.user.username }}</b><b>
-                        </b></small></h4>
+                <h4><b><a href="{{ url_for('question', id=item.id, slug=item.slug) }}">{{ item.title }}</a></b></h4>
+                <span>Asked on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
+                    <b>{{ item.user.username }}</b>
+                </span>
                 <hr>
                 <p class="mb-1">{{ item.content }}</p><br>
                 {% for tag in item.tags %}

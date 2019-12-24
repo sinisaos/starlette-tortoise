@@ -6,10 +6,11 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                <h4><b>{{ item.title }}</b>
-                    <small class="float-right">Asked on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
-                        <b>{{ item.user.username }}</b><b>
-                        </b></small></h4>
+                <h4><b>{{ item.title }}</b></h4>
+                <span>Asked on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
+                    <b>{{ item.user.username }}</b><b>
+                    </b>
+                </span>
                 <hr>
                 <p class="mb-1">{{ item.content }}</p><br>
                 {% for tag in item.tags %}

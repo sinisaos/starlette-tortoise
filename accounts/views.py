@@ -130,10 +130,11 @@ async def user_delete(request):
     if request.method == "POST":
         async with in_transaction() as conn:
             await conn.execute_query(
-                f"DELETE FROM tag WHERE tag.id IN \
+                f'DELETE FROM tag WHERE tag.id IN \
                 (SELECT question_tag.tag_id FROM question \
                 JOIN question_tag ON question_tag.question_id = question.id \
-                JOIN user ON user.id = question.user_id WHERE user.id = {id})"
+                JOIN "user" ON "user".id = question.user_id \
+                WHERE "user".id = {id})'
             )
         await User.get(id=id).delete()
         if request.user.username == ADMIN:
