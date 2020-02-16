@@ -10,9 +10,6 @@ Click==7.0
 contextvars==2.4
 cryptography==2.7
 databases==0.2.5
-dj-database-url==0.5.0
-Django==3.0.1
-django-heroku==0.3.1
 gunicorn==20.0.4
 h11==0.8.1
 httptools==0.0.13

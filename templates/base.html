@@ -34,11 +34,11 @@
           {% if request.user.is_authenticated %}
           <a id="button" class="btn btn-success" href="{{ url_for('question_create') }}"><i class="fa fa-plus"
               aria-hidden="true"></i> Ask
-            Questions</a>
+            Question</a>
           {% else %}
           <a id="button" class="btn btn-success" href="{{ url_for('login') }}?next={{ path }}?page={{ page_query }}"><i
               class="fa fa-plus" aria-hidden="true"></i> Ask
-            Questions</a>
+            Question</a>
           {% endif %}
         </ul>
         <ul class="navbar-nav">
