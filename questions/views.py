@@ -30,12 +30,10 @@ async def questions_all(request):
     """
     path = request.url.path
     page_query = request.query_params['page']
-    result = await Question.all()
-    count = len(result)
-    page = int(page_query)
+    result = await Question.all().count()
     per = 2
-    totalPages = int(math.ceil(count / per))
-    offset = per * (page - 1)
+    total_pages = int(math.ceil(result / per))
+    offset = per * (int(page_query) - 1)
     results = await Question.all().prefetch_related(
         "user", "tags").limit(per).offset(offset).order_by('-id')
     return templates.TemplateResponse(
@@ -44,7 +42,7 @@ async def questions_all(request):
             "request": request,
             "results": results,
             "path": path,
-            "totalPages": totalPages,
+            "totalPages": total_pages,
             "page_query": page_query
         },
     )
@@ -56,12 +54,10 @@ async def questions_solved(request):
     """
     path = request.url.path
     page_query = request.query_params['page']
-    result = await Question.filter(accepted_answer=True)
-    count = len(result)
-    page = int(page_query)
+    result = await Question.filter(accepted_answer=True).count()
     per = 2
-    totalPages = int(math.ceil(count / per))
-    offset = per * (page - 1)
+    total_pages = int(math.ceil(result / per))
+    offset = per * (int(page_query) - 1)
     results = await Question.filter(accepted_answer=True).prefetch_related(
         "user", "tags").limit(per).offset(offset).order_by('-id')
     return templates.TemplateResponse(
@@ -70,7 +66,7 @@ async def questions_solved(request):
             "request": request,
             "results": results,
             "path": path,
-            "totalPages": totalPages,
+            "totalPages": total_pages,
             "page_query": page_query
         },
     )
@@ -82,12 +78,10 @@ async def questions_open(request):
     """
     path = request.url.path
     page_query = request.query_params['page']
-    result = await Question.filter(accepted_answer=False)
-    count = len(result)
-    page = int(page_query)
+    result = await Question.filter(accepted_answer=False).count()
     per = 2
-    totalPages = int(math.ceil(count / per))
-    offset = per * (page - 1)
+    total_pages = int(math.ceil(result / per))
+    offset = per * (int(page_query) - 1)
     results = await Question.filter(accepted_answer=False).prefetch_related(
         "user", "tags").limit(per).offset(offset).order_by('-id')
     return templates.TemplateResponse(
@@ -96,7 +90,7 @@ async def questions_open(request):
             "request": request,
             "results": results,
             "path": path,
-            "totalPages": totalPages,
+            "totalPages": total_pages,
             "page_query": page_query
         },
     )
@@ -108,12 +102,10 @@ async def questions_viewed(request):
     """
     path = request.url.path
     page_query = request.query_params['page']
-    result = await Question.all()
-    count = len(result)
-    page = int(page_query)
+    result = await Question.all().count()
     per = 2
-    totalPages = int(math.ceil(count / per))
-    offset = per * (page - 1)
+    total_pages = int(math.ceil(result / per))
+    offset = per * (int(page_query) - 1)
     results = await Question.all().prefetch_related(
         "user", "tags").limit(per).offset(offset).order_by('-view')
     return templates.TemplateResponse(
@@ -122,7 +114,7 @@ async def questions_viewed(request):
             "request": request,
             "results": results,
             "path": path,
-            "totalPages": totalPages,
+            "totalPages": total_pages,
             "page_query": page_query
         },
     )
@@ -134,12 +126,10 @@ async def questions_oldest(request):
     """
     path = request.url.path
     page_query = request.query_params['page']
-    result = await Question.all()
-    count = len(result)
-    page = int(page_query)
+    result = await Question.all().count()
     per = 2
-    totalPages = int(math.ceil(count / per))
-    offset = per * (page - 1)
+    total_pages = int(math.ceil(result / per))
+    offset = per * (int(page_query) - 1)
     results = await Question.all().prefetch_related(
         "user", "tags").limit(per).offset(offset).order_by('id')
     return templates.TemplateResponse(
@@ -148,7 +138,7 @@ async def questions_oldest(request):
             "request": request,
             "results": results,
             "path": path,
-            "totalPages": totalPages,
+            "totalPages": total_pages,
             "page_query": page_query
         },
     )
