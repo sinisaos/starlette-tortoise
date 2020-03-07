@@ -31,6 +31,22 @@
                 {% else %}
                 <h4>No results</h4>
                 {% endif %}
+                <div class="row">
+                    {% if page_controls %}
+                    <div class="col">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination pagination-sm float-right">
+                                {% for control in page_controls %}
+                                <li
+                                    class="page-item {% if control.is_disabled %}disabled{% endif %} {% if control.is_active %}active{% endif %}">
+                                    <a class="page-link" {% if control.url %}href="{{ control.url }}"
+                                        {% endif %}>{{ control.text }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>  
             </div>
         </div>
     </div>

@@ -1,11 +1,11 @@
 import datetime
-import math
 import itertools as it
 from settings import templates, BASE_HOST
 from starlette.responses import RedirectResponse
 from starlette.authentication import requires
 from tortoise.query_utils import Q
 from tortoise.transactions import in_transaction
+from utils import pagination
 from questions.forms import (
     QuestionForm,
     AnswerForm,
@@ -28,23 +28,28 @@ async def questions_all(request):
     """
     All questions
     """
-    path = request.url.path
-    page_query = request.query_params['page']
-    result = await Question.all().count()
-    per = 2
-    total_pages = int(math.ceil(result / per))
-    offset = per * (int(page_query) - 1)
-    results = await Question.all().prefetch_related(
-        "user", "tags").limit(per).offset(offset).order_by('-id')
+    page_query = pagination.get_page_number(url=request.url)
+    count = await Question.all().count()
+    paginator = pagination.Pagination(page_query, count)
+    results = (
+        await Question.all()
+        .prefetch_related("user", "tags")
+        .limit(paginator.page_size)
+        .offset(paginator.offset())
+        .order_by('-id')
+    )
+    page_controls = pagination.get_page_controls(
+        url=request.url,
+        current_page=paginator.current_page(),
+        total_pages=paginator.total_pages()
+    )
     return templates.TemplateResponse(
         "questions/questions.html",
         {
             "request": request,
             "results": results,
-            "path": path,
-            "totalPages": total_pages,
-            "page_query": page_query
-        },
+            "page_controls": page_controls
+        }
     )
 
 
@@ -52,23 +57,28 @@ async def questions_solved(request):
     """
     Solved questions
     """
-    path = request.url.path
-    page_query = request.query_params['page']
-    result = await Question.filter(accepted_answer=True).count()
-    per = 2
-    total_pages = int(math.ceil(result / per))
-    offset = per * (int(page_query) - 1)
-    results = await Question.filter(accepted_answer=True).prefetch_related(
-        "user", "tags").limit(per).offset(offset).order_by('-id')
+    page_query = pagination.get_page_number(url=request.url)
+    count = await Question.filter(accepted_answer=True).count()
+    paginator = pagination.Pagination(page_query, count)
+    results = (
+        await Question.filter(accepted_answer=True)
+        .prefetch_related("user", "tags")
+        .limit(paginator.page_size)
+        .offset(paginator.offset())
+        .order_by('-id')
+    )
+    page_controls = pagination.get_page_controls(
+        url=request.url,
+        current_page=paginator.current_page(),
+        total_pages=paginator.total_pages()
+    )
     return templates.TemplateResponse(
         "questions/questions_solved.html",
         {
             "request": request,
             "results": results,
-            "path": path,
-            "totalPages": total_pages,
-            "page_query": page_query
-        },
+            "page_controls": page_controls
+        }
     )
 
 
@@ -76,23 +86,28 @@ async def questions_open(request):
     """
     Unsolved questions
     """
-    path = request.url.path
-    page_query = request.query_params['page']
-    result = await Question.filter(accepted_answer=False).count()
-    per = 2
-    total_pages = int(math.ceil(result / per))
-    offset = per * (int(page_query) - 1)
-    results = await Question.filter(accepted_answer=False).prefetch_related(
-        "user", "tags").limit(per).offset(offset).order_by('-id')
+    page_query = pagination.get_page_number(url=request.url)
+    count = await Question.filter(accepted_answer=False).count()
+    paginator = pagination.Pagination(page_query, count)
+    results = (
+        await Question.filter(accepted_answer=False)
+        .prefetch_related("user", "tags")
+        .limit(paginator.page_size)
+        .offset(paginator.offset())
+        .order_by('-id')
+    )
+    page_controls = pagination.get_page_controls(
+        url=request.url,
+        current_page=paginator.current_page(),
+        total_pages=paginator.total_pages()
+    )
     return templates.TemplateResponse(
         "questions/questions_open.html",
         {
             "request": request,
             "results": results,
-            "path": path,
-            "totalPages": total_pages,
-            "page_query": page_query
-        },
+            "page_controls": page_controls
+        }
     )
 
 
@@ -100,23 +115,28 @@ async def questions_viewed(request):
     """
     Most viewed questions
     """
-    path = request.url.path
-    page_query = request.query_params['page']
-    result = await Question.all().count()
-    per = 2
-    total_pages = int(math.ceil(result / per))
-    offset = per * (int(page_query) - 1)
-    results = await Question.all().prefetch_related(
-        "user", "tags").limit(per).offset(offset).order_by('-view')
+    page_query = pagination.get_page_number(url=request.url)
+    count = await Question.all().count()
+    paginator = pagination.Pagination(page_query, count)
+    results = (
+        await Question.all()
+        .prefetch_related("user", "tags")
+        .limit(paginator.page_size)
+        .offset(paginator.offset())
+        .order_by('-view')
+    )
+    page_controls = pagination.get_page_controls(
+        url=request.url,
+        current_page=paginator.current_page(),
+        total_pages=paginator.total_pages()
+    )
     return templates.TemplateResponse(
         "questions/questions_viewed.html",
         {
             "request": request,
             "results": results,
-            "path": path,
-            "totalPages": total_pages,
-            "page_query": page_query
-        },
+            "page_controls": page_controls
+        }
     )
 
 
@@ -124,23 +144,28 @@ async def questions_oldest(request):
     """
     Oldest questions
     """
-    path = request.url.path
-    page_query = request.query_params['page']
-    result = await Question.all().count()
-    per = 2
-    total_pages = int(math.ceil(result / per))
-    offset = per * (int(page_query) - 1)
-    results = await Question.all().prefetch_related(
-        "user", "tags").limit(per).offset(offset).order_by('id')
+    page_query = pagination.get_page_number(url=request.url)
+    count = await Question.all().count()
+    paginator = pagination.Pagination(page_query, count)
+    results = (
+        await Question.all()
+        .prefetch_related("user", "tags")
+        .limit(paginator.page_size)
+        .offset(paginator.offset())
+        .order_by('id')
+    )
+    page_controls = pagination.get_page_controls(
+        url=request.url,
+        current_page=paginator.current_page(),
+        total_pages=paginator.total_pages()
+    )
     return templates.TemplateResponse(
         "questions/questions_oldest.html",
         {
             "request": request,
             "results": results,
-            "path": path,
-            "totalPages": total_pages,
-            "page_query": page_query
-        },
+            "page_controls": page_controls
+        }
     )
 
 
@@ -423,17 +448,34 @@ async def tags(request):
     """
     All tags
     """
+    page_query = pagination.get_page_number(url=request.url)
     tag = request.path_params["tag"]
+    count = (
+        await Question.all()
+        .prefetch_related("user", "tags")
+        .filter(tags__name=tag)
+        .count()
+    )
+    paginator = pagination.Pagination(page_query, count)
     results = (
         await Question.all()
         .prefetch_related("user", "tags")
         .filter(tags__name=tag)
+        .limit(paginator.page_size)
+        .offset(paginator.offset())
         .order_by("-id")
+    )
+    page_controls = pagination.get_page_controls(
+        url=request.url,
+        current_page=paginator.current_page(),
+        total_pages=paginator.total_pages()
     )
     return templates.TemplateResponse(
         "questions/tags.html", {
             "request": request,
-            "results": results, "tag": tag
+            "results": results,
+            "page_controls": page_controls,
+            "tag": tag
         }
     )
 
@@ -443,27 +485,55 @@ async def search(request):
     Search questions
     """
     try:
+        page_query = pagination.get_page_number(url=request.url)
         q = request.query_params['q']
+        count = (
+            await Question.all()
+            .prefetch_related("user")
+            .filter(Q(title__icontains=q) |
+                    Q(content__icontains=q) |
+                    Q(user__username__icontains=q))
+            .distinct()
+            .count()
+        )
+        paginator = pagination.Pagination(page_query, count)
         results = (
             await Question.all()
             .prefetch_related("user", "tags")
             .filter(Q(title__icontains=q) |
                     Q(content__icontains=q) |
                     Q(user__username__icontains=q) |
-                    Q(tags__name__icontains=q)).distinct()
-            .order_by("-id")
+                    Q(tags__name__icontains=q))
+            .distinct()
+            .limit(paginator.page_size)
+            .offset(paginator.offset())
+        )
+        page_controls = pagination.get_page_controls(
+            url=request.url,
+            current_page=paginator.current_page(),
+            total_pages=paginator.total_pages()
         )
     except KeyError:
+        page_query = pagination.get_page_number(url=request.url)
+        count = await Question.all().count()
+        paginator = pagination.Pagination(page_query, count)
         results = (
             await Question.all()
             .prefetch_related("user", "tags")
-            .order_by("-id")
+            .limit(paginator.page_size)
+            .offset(paginator.offset())
+        )
+        page_controls = pagination.get_page_controls(
+            url=request.url,
+            current_page=paginator.current_page(),
+            total_pages=paginator.total_pages()
         )
     return templates.TemplateResponse(
         "questions/search.html", {
             "request": request,
             "results": results,
-            "count": len(results)
+            "page_controls": page_controls,
+            "count": count
         }
     )
 

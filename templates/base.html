@@ -17,6 +17,8 @@
 
   <!-- Font-awesome CDN -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+
+  <link rel="shortcut icon" type="image/png" href="{{ url_for('static', path='/images/icons/icon-72x72.png') }}" />
 </head>
 
 <body>
@@ -43,7 +45,7 @@
         </ul>
         <ul class="navbar-nav">
           <a class="nav-link" href="{{ url_for('tags_categories') }}">Tags</a>
-          <a class="nav-link" href="{{ url_for('questions_all') }}?page=1">Questions</a>
+          <a class="nav-link" href="{{ url_for('questions_all') }}">Questions</a>
           {% if not request.user.username %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('login') }}?next=/">Login</a>
