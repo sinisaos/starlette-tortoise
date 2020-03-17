@@ -15,12 +15,14 @@ from questions.forms import (
     QuestionLikesForm,
     AcceptedAnswerForm
 )
-from models import (
-    Question,
+from accounts.models import (
     User,
+    ADMIN
+)
+from questions.models import (
+    Question,
     Answer,
     Tag,
-    ADMIN
 )
 
 
@@ -38,6 +40,14 @@ async def questions_all(request):
         .offset(paginator.offset())
         .order_by('-id')
     )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     page_controls = pagination.get_page_controls(
         url=request.url,
         current_page=paginator.current_page(),
@@ -47,8 +57,8 @@ async def questions_all(request):
         "questions/questions.html",
         {
             "request": request,
-            "results": results,
-            "page_controls": page_controls
+            "results": zip(results, answer_count),
+            "page_controls": page_controls,
         }
     )
 
@@ -67,16 +77,24 @@ async def questions_solved(request):
         .offset(paginator.offset())
         .order_by('-id')
     )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     page_controls = pagination.get_page_controls(
         url=request.url,
         current_page=paginator.current_page(),
         total_pages=paginator.total_pages()
     )
     return templates.TemplateResponse(
-        "questions/questions_solved.html",
+        "questions/questions.html",
         {
             "request": request,
-            "results": results,
+            "results": zip(results, answer_count),
             "page_controls": page_controls
         }
     )
@@ -96,16 +114,24 @@ async def questions_open(request):
         .offset(paginator.offset())
         .order_by('-id')
     )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     page_controls = pagination.get_page_controls(
         url=request.url,
         current_page=paginator.current_page(),
         total_pages=paginator.total_pages()
     )
     return templates.TemplateResponse(
-        "questions/questions_open.html",
+        "questions/questions.html",
         {
             "request": request,
-            "results": results,
+            "results": zip(results, answer_count),
             "page_controls": page_controls
         }
     )
@@ -125,16 +151,24 @@ async def questions_viewed(request):
         .offset(paginator.offset())
         .order_by('-view')
     )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     page_controls = pagination.get_page_controls(
         url=request.url,
         current_page=paginator.current_page(),
         total_pages=paginator.total_pages()
     )
     return templates.TemplateResponse(
-        "questions/questions_viewed.html",
+        "questions/questions.html",
         {
             "request": request,
-            "results": results,
+            "results": zip(results, answer_count),
             "page_controls": page_controls
         }
     )
@@ -154,16 +188,24 @@ async def questions_oldest(request):
         .offset(paginator.offset())
         .order_by('id')
     )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     page_controls = pagination.get_page_controls(
         url=request.url,
         current_page=paginator.current_page(),
         total_pages=paginator.total_pages()
     )
     return templates.TemplateResponse(
-        "questions/questions_oldest.html",
+        "questions/questions.html",
         {
             "request": request,
-            "results": results,
+            "results": zip(results, answer_count),
             "page_controls": page_controls
         }
     )
@@ -246,7 +288,6 @@ async def question_create(request):
                 created=datetime.datetime.now(),
                 view=0,
                 question_like=0,
-                answer_count=0,
                 user_id=results.id,
             )
             await query.save()
@@ -292,7 +333,6 @@ async def question_edit(request):
             created=datetime.datetime.now(),
             view=question.view,
             question_like=question.question_like,
-            answer_count=question.answer_count,
             user_id=results.id,
         )
         await query.save()
@@ -336,7 +376,10 @@ async def answer_create(request):
     """
     id = int(request.query_params['next'].split('/')[2])
     next = request.query_params['next']
-    results = await Question.get(id=id).prefetch_related("user", "tags")
+    results = (
+        await Question.get(id=id)
+        .prefetch_related("user", "tags")
+    )
     session_user = request.user.username
     data = await request.form()
     form = AnswerForm(data)
@@ -351,8 +394,6 @@ async def answer_create(request):
             ans_user_id=result.id,
         )
         await query.save()
-        results.answer_count += 1
-        await results.save()
         return RedirectResponse(BASE_HOST + next, status_code=302)
     return templates.TemplateResponse(
         "questions/answer_create.html", {
@@ -402,12 +443,7 @@ async def answer_delete(request):
     Delete answer
     """
     id = request.path_params["id"]
-    answer = await Answer.get(id=id)
-    results = await Question.get(id=answer.question_id)
     if request.method == "POST":
-        # decrease question answer count
-        results.answer_count -= 1
-        await results.save()
         await Answer.get(id=id).delete()
         if request.user.username == ADMIN:
             return RedirectResponse(url="/accounts/dashboard", status_code=302)
@@ -465,6 +501,14 @@ async def tags(request):
         .offset(paginator.offset())
         .order_by("-id")
     )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     page_controls = pagination.get_page_controls(
         url=request.url,
         current_page=paginator.current_page(),
@@ -473,7 +517,7 @@ async def tags(request):
     return templates.TemplateResponse(
         "questions/tags.html", {
             "request": request,
-            "results": results,
+            "results": zip(results, answer_count),
             "page_controls": page_controls,
             "tag": tag
         }
@@ -528,12 +572,21 @@ async def search(request):
             current_page=paginator.current_page(),
             total_pages=paginator.total_pages()
         )
+    answer_count = []
+    for row in results:
+        r = (
+            await Answer.all()
+            .prefetch_related("question")
+            .filter(question__id=row.id).count()
+        )
+        answer_count.append(r)
     return templates.TemplateResponse(
         "questions/search.html", {
             "request": request,
-            "results": results,
+            "results": zip(results, answer_count),
             "page_controls": page_controls,
-            "count": count
+            "count": count,
+            "q": q
         }
     )
 

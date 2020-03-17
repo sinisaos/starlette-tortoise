@@ -1,14 +1,12 @@
-import datetime
 from starlette.applications import Starlette
-from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from secure import SecureHeaders
 from starlette.staticfiles import StaticFiles
 from starlette.routing import Route
-from models import UserAuthentication
 from tortoise.contrib.starlette import register_tortoise
 from settings import templates, DB_URI, SECRET_KEY
+from accounts.models import UserAuthentication
 from accounts.routes import accounts_routes
 from questions.routes import questions_routes
 
@@ -71,5 +69,7 @@ async def server_error(request, exc):
 
 
 register_tortoise(
-    app, db_url=DB_URI, modules={"models": ["models"]}, generate_schemas=True
+    app, db_url=DB_URI,
+    modules={"models": ["accounts.models", "questions.models"]},
+    generate_schemas=True
 )

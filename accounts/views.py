@@ -4,14 +4,16 @@ from starlette.responses import RedirectResponse
 from starlette.authentication import requires
 from tortoise.transactions import in_transaction
 from accounts.forms import RegistrationForm, LoginForm
-from models import (
+from accounts.models import (
     User,
-    Question,
-    Answer,
     check_password,
     generate_jwt,
     hash_password,
     ADMIN,
+)
+from questions.models import (
+    Question,
+    Answer
 )
 
 
@@ -104,7 +106,7 @@ async def login(request):
                 "admin", ADMIN, httponly=True
             )
             return response
-        except:
+        except:  # noqa
             user_error = "Please register you don't have account"
             return templates.TemplateResponse(
                 "accounts/login.html",

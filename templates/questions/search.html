@@ -5,31 +5,31 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 offset-md-2">
+                {% include 'questions/search_form.html' %}
                 {% if results %}
-                <h3>{{ count }} result(s)</h3>
+                <h3>{{ count }} result(s) for term "{{ q }}"</h3>
                 <br>
                 {% for item in results %}
-                <h4><b><a href="{{ url_for('question', id=item.id, slug=item.slug) }}">{{ item.title }}</a></b></h4>
-                <span>Asked on <i>{{ item.created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
-                    <b>{{ item.user.username }}</b>
+                <h4><b><a href="{{ url_for('question', id=item[0].id, slug=item[0].slug) }}">{{ item[0].title }}</a></b>
+                </h4>
+                <span>Asked on <i>{{ item[0].created.strftime('%d-%m-%Y %H:%M:%S') }}</i> by
+                    <b>{{ item[0].user.username }}</b>
                 </span>
                 <hr>
-                <p class="mb-1">{{ item.content }}</p><br>
-                {% for tag in item.tags %}
+                <p class="mb-1">{{ item[0].content }}</p><br>
+                {% for tag in item[0].tags %}
                 <a href="{{ url_for('tags', tag=tag.name) }}" class="btn btn-xs btn-primary">{{ tag.name }}</a>
                 {% endfor %}
                 <br><br>
-                <i class="fa fa-eye" aria-hidden="true" title="Views"> {{ item.view }}</i>&ensp;
-                <i class="fa fa-comment" aria-hidden="true" title="Answers"> {{ item.answer_count }}</i>&ensp;
-                <i class="fa fa-thumbs-up" aria-hidden="true" title="Likes"> {{ item.question_like }}</i>&ensp;
-                {% if item.accepted_answer %}
+                <i class="fa fa-eye" aria-hidden="true" title="Views"> {{ item[0].view }}</i>&ensp;
+                <i class="fa fa-comment" aria-hidden="true" title="Answers"> {{ item[1] }}</i>&ensp;
+                <i class="fa fa-thumbs-up" aria-hidden="true" title="Likes"> {{ item[0].question_like }}</i>&ensp;
+                {% if item[0].accepted_answer %}
                 <span class="badge badge-badge-pill-lg badge-success float-right">Solved</span>
                 {% endif %}
                 <br>
                 <hr>
                 {% endfor %}
-                {% else %}
-                <h4>No results</h4>
                 {% endif %}
                 <div class="row">
                     {% if page_controls %}
