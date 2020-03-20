@@ -443,7 +443,12 @@ async def answer_delete(request):
     Delete answer
     """
     id = request.path_params["id"]
+    answer = await Answer.get(id=id)
+    question = await Question.get(id=answer.question_id)
     if request.method == "POST":
+        if answer.is_accepted_answer:
+            question.accepted_answer = False
+            await question.save()
         await Answer.get(id=id).delete()
         if request.user.username == ADMIN:
             return RedirectResponse(url="/accounts/dashboard", status_code=302)
