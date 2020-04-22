@@ -325,8 +325,7 @@ async def question_edit(request):
     new_form_value, form.content.data = form.content.data, question.content
     title = form.title.data
     if request.method == "POST" and form.validate():
-        query = Question(
-            id=question.id,
+        await Question.filter(id=id).update(
             title=title,
             slug="-".join(title.lower().split()),
             content=new_form_value,
@@ -335,7 +334,6 @@ async def question_edit(request):
             question_like=question.question_like,
             user_id=results.id,
         )
-        await query.save()
         if request.user.username == ADMIN:
             return RedirectResponse(url="/accounts/dashboard", status_code=302)
         return RedirectResponse(url="/accounts/profile", status_code=302)
@@ -415,8 +413,7 @@ async def answer_edit(request):
     form = AnswerEditForm(data)
     new_form_value, form.content.data = form.content.data, answer.content
     if request.method == "POST" and form.validate():
-        query = Answer(
-            id=answer.id,
+        await Answer.filter(id=answer.id).update(
             content=new_form_value,
             created=datetime.datetime.now(),
             answer_like=answer.answer_like,
@@ -424,7 +421,6 @@ async def answer_edit(request):
             question_id=answer.question_id,
             ans_user_id=answer.ans_user_id,
         )
-        await query.save()
         if request.user.username == ADMIN:
             return RedirectResponse(url="/accounts/dashboard", status_code=302)
         return RedirectResponse(url="/accounts/profile", status_code=302)

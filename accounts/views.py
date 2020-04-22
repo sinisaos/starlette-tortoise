@@ -138,6 +138,12 @@ async def user_delete(request):
                 JOIN "user" ON "user".id = question.user_id \
                 WHERE "user".id = {id})'
             )
+        async with in_transaction() as conn:
+            await conn.execute_query(
+                f'UPDATE question SET accepted_answer = false \
+                FROM answer, "user" WHERE question.id = answer.question_id \
+                AND "user".id = {id} AND question.accepted_answer = true'
+            )
         await User.get(id=id).delete()
         if request.user.username == ADMIN:
             return RedirectResponse(url="/accounts/dashboard", status_code=302)
